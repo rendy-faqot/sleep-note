@@ -25,7 +25,26 @@ SleepNote covers several feature:
 
 ## Endpoints
 
-TBA
+- `POST /users/:user_id/sleep_records/clock_in`
+- `POST /users/:user_id/sleep_records/clock_out`
+- `GET /users/:user_id/sleep_records`
+- `POST http://localhost:3000/users/:user_id/follow`
+- `DELETE http://localhost:3000/users/:user_id/unfollow`
+
+### Example 
+
+```bash
+curl -X POST http://localhost:3000/users/1/sleep_records/clock_in
+
+curl -X POST http://localhost:3000/users/1/sleep_records/clock_out
+
+curl http://localhost:3000/users/1/sleep_records
+
+curl -X POST http://localhost:3000/users/1/follow -d "followed_id=2"
+
+curl -X DELETE http://localhost:3000/users/1/unfollow -d "followed_id=2"
+```
+
 
 ## How to run the test
 
