@@ -1,24 +1,32 @@
-# README
+# SleepNote
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+SleepNote is simple app to log sleep and wake-up activities. 
 
-Things you may want to cover:
+## Project Description
 
-* Ruby version
+SleepNote covers several feature:
+- **Sleep Records**: Clock-in and clock-out sleep entries
+- **Social Follow System**: Follow and unfollow other users to see their sleep entries
+- **Sleep Activity Timeline**: See our friends sleep activities
 
-* System dependencies
+## Tech Stack
 
-* Configuration
+- **Framework**: Ruby on Rails 8.0 (API only)
+- **Database**: PostgreSQL
+- **Testing**: RSpec
+
+## Setup Instructions
 
 * Database creation
 
 * Database initialization
 
-* How to run the test suite
+* Database seed
 
-* Services (job queues, cache servers, search engines, etc.)
+## Endpoints
 
-* Deployment instructions
+TBA
 
-* ...
+## How to run the test
+
+TBA
