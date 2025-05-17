@@ -1,37 +1,21 @@
 class FollowsController < ApplicationController
+  # POST /users/:user_id/follow
   def follow
-    follower = User.find(params[:user_id])
-    followed = User.find(params[:followed_id])
-    # Return an error if the followed user does not exist
-    unless followed
-      render json: { error: 'Followed user not found' }, status: :not_found
-      return
-    end
+    response = FollowService::Following.execute(params[:user_id], params[:followed_id])
+    return render json: response, status: :ok if response[:success]
 
-    # Check if the follow relationship already exists
-    existing_follow = Follow.find_by(follower_id: follower.id, followed_id: followed.id)
-    if existing_follow
-      render json: { message: "You are already following #{followed.name}" }, status: :ok
-      return
-    end
-
-    # Create the follow relationship if it doesn't exist
-    follow = Follow.create(follower_id: follower.id, followed_id: followed.id)
-    if follow.persisted?
-      render json: { message: "Successfully followed #{followed.name}" }, status: :created
-    else
-      render json: { error: "Unable to follow user" }, status: :unprocessable_entity
-    end
+    return render json: { error: response[:error] }, status: :unprocessable_entity if response[:error]
+  rescue => e
+    render json: { error: e.message }, status: :internal_server_error
   end
 
+  # DELETE /users/:user_id/unfollow
   def unfollow
-    follow = Follow.find_by(follower_id: params[:user_id], followed_id: params[:followed_id])
+    response = FollowService::Followed.execute(params[:user_id], params[:followed_id])
+    return render json: response, status: :ok if response[:success]
 
-    if follow
-      follow.destroy
-      render json: { message: 'Unfollowed successfully' }, status: :ok
-    else
-      render json: { error: 'You are not following this user' }, status: :unprocessable_entity
-    end
+    return render json: { error: response[:error] }, status: :unprocessable_entity if response[:error]
+  rescue => e
+    render json: { error: e.message }, status: :internal_server_error
   end
 end
