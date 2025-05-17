@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   resources :users, only: [] do
     resources :sleep_records, only: [:index] do
       post 'clock_in', on: :collection
+      post 'clock_out', on: :collection
     end
     post 'follow', to: 'follows#follow'
     delete 'unfollow', to: 'follows#unfollow'

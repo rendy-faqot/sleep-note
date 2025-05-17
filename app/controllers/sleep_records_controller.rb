@@ -16,8 +16,8 @@ class SleepRecordsController < ApplicationController
 
   # POST /users/:user_id/sleep_records/clock_out
   def clock_out
-    if @sleep_record.clock_out.nil?
-      @sleep_record.clock_out = Time.current
+    if @sleep_record.end_time.nil?
+      @sleep_record.end_time = Time.current
       @sleep_record.calculate_duration
 
       if @sleep_record.save
@@ -28,12 +28,14 @@ class SleepRecordsController < ApplicationController
     else
       render json: { error: 'Already clocked out' }, status: :bad_request
     end
+  rescue => e
+    render json: { error: e.message }, status: :internal_server_error
   end
 
   private
 
   def set_sleep_record
-    @sleep_record = SleepRecord.find(params[:id])
+    @sleep_record = SleepRecord.find_by(user_id: params[:user_id])
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'Sleep record not found' }, status: :not_found
   end
