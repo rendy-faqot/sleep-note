@@ -1,11 +1,11 @@
 module Sleep
   class ClockOut
 
-    def initialize(sleep_record)
+    def self.initialize(sleep_record)
           @sleep_record = sleep_record
         end
 
-    def execute(record_id)
+    def self.execute(record_id)
       sleep_record = @sleep_record.find(record_id)
 
       return { error: 'Already clocked out' } if sleep_record.clock_out
