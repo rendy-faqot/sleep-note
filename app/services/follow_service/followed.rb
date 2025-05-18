@@ -5,9 +5,9 @@ module FollowService
 
       if follow
         follow.destroy
-        return { success: 'Unfollowed successfully' }
+        { success: "Unfollowed successfully" }
       else
-        return { error: 'You are not following this user', details: new_sleep_record.errors.full_messages }
+        { error: 'You are not following this user', details: new_sleep_record.errors.full_messages }
       end
     rescue StandardError => e
       { error: "An error occurred: #{e.message}" }

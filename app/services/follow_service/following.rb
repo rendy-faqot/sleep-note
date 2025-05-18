@@ -5,7 +5,7 @@ module FollowService
       followed = User.find(followed_id)
       # Return an error if the followed user does not exist
       unless followed
-        return { error: 'Followed user not found' }
+        return { error: "Followed user not found" }
       end
 
       # Check if the follow relationship already exists
@@ -17,9 +17,9 @@ module FollowService
       # Create the follow relationship if it doesn't exist
       follow = Follow.create(follower_id: follower.id, followed_id: followed.id)
       if follow.persisted?
-        return { success: "Successfully followed #{followed.name}" }
+        { success: "Successfully followed #{followed.name}" }
       else
-        return { error: "Unable to follow user", details: new_sleep_record.errors.full_messages }
+        { error: "Unable to follow user", details: new_sleep_record.errors.full_messages }
       end
     rescue StandardError => e
       { error: "An error occurred: #{e.message}" }

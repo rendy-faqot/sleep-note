@@ -55,7 +55,6 @@ class SleepRecordsController < ApplicationController
   def clock_out
     user = User.find(params[:user_id])
     response = SleepService::ClockOut.execute(user)
-    
     if response[:success]
       render json: response, status: :ok
     elsif response[:error]
