@@ -3,21 +3,37 @@ class SleepRecordsController < ApplicationController
   def index
     user = User.find(params[:user_id])
 
-    # Get followed user IDs
-    followed_ids = Follow.where(follower_id: user.id).pluck(:followed_id)
-
-    # Get the current date and T-7 date
+    # Calculate the start date (T-7)
     start_date = 7.days.ago.beginning_of_day
-    
-    # Combine the current user ID with followed user IDs
+
+    # Get followed user IDs and include the current user
+    followed_ids = Follow.where(follower_id: user.id).pluck(:followed_id)
     user_ids = [user.id] + followed_ids
 
-    # Query sleep records from followed users within the previous week, sorted by duration
-    records = SleepRecord.where(user_id: user_ids, created_at: start_date..Time.current)
-                        .where.not(duration: nil)  # Exclude unfinished sleep records
-                        .order(duration: :desc)
+    # Set pagination parameters
+    limit = (params[:limit] || 10).to_i
+    after = params[:after]
 
-    render json: records
+    # Base query: sleep records from the last 7 days, sorted by duration
+    query = SleepRecord.where(user_id: user_ids, created_at: start_date..Time.current)
+                      .where.not(duration: nil)
+                      .order(duration: :desc)
+
+    # Apply the cursor for pagination (using ID as the cursor)
+    if after.present?
+      query = query.where("id > ?", after)
+    end
+
+    # Limit the number of records fetched
+    records = query.limit(limit)
+
+    # Prepare the next cursor (last record ID from the current set)
+    next_cursor = records.last&.id
+
+    render json: {
+      sleep_records: records,
+      next_cursor: next_cursor
+    }
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'User not found' }, status: :not_found
   end
