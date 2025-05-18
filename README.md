@@ -17,11 +17,32 @@ SleepNote covers several feature:
 
 ## Setup Instructions
 
-* Database creation
+* Clone repository
+  ```bash
+  git clone git@github.com:rendy-faqot/sleep-note.git
+  ```
 
-* Database initialization
+* Install dependencies
+  ```bash
+  bundle install
+  ```
 
-* Database seed
+* Database migration & seed
+  ```bash
+  rails db:create db:migrate db:seed
+  ```
+
+* Start server
+  ```bash
+  rails s
+  ```
+
+## Testing Project
+
+```bash
+bundle exec rspec
+open coverage/index.html
+```
 
 ## Endpoints
 
@@ -44,8 +65,3 @@ curl -X POST http://localhost:3000/users/1/follow -d "followed_id=2"
 
 curl -X DELETE http://localhost:3000/users/1/unfollow -d "followed_id=2"
 ```
-
-
-## How to run the test
-
-TBA
