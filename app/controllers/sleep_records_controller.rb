@@ -8,14 +8,13 @@ class SleepRecordsController < ApplicationController
 
     # Get followed user IDs and include the current user
     followed_ids = Follow.where(follower_id: user.id).pluck(:followed_id)
-    user_ids = [user.id] + followed_ids
 
     # Set pagination parameters
     limit = (params[:limit] || 10).to_i
     after = params[:after]
 
     # Base query: sleep records from the last 7 days, sorted by duration
-    query = SleepRecord.where(user_id: user_ids, created_at: start_date..Time.current)
+    query = SleepRecord.where(user_id: followed_ids, created_at: start_date..Time.current)
                       .where.not(duration: nil)
                       .order(duration: :desc)
 
@@ -35,7 +34,7 @@ class SleepRecordsController < ApplicationController
       next_cursor: next_cursor
     }
   rescue ActiveRecord::RecordNotFound
-    render json: { error: 'User not found' }, status: :not_found
+    render json: { error: "User not found" }, status: :not_found
   end
 
   # POST /users/:user_id/sleep_records/clock_in
@@ -43,9 +42,10 @@ class SleepRecordsController < ApplicationController
     user = User.find(params[:user_id])
     response = SleepService::ClockIn.execute(user, Time.current)
 
-    return render json: response, status: :created if response[:success]
-
-    return render json: { error: response[:error] }, status: :unprocessable_entity if response[:error]
+    if response[:success]
+      render json: response, status: :created if response[:success]
+    elsif response[:error]
+      render json: { error: response[:error] }, status: :unprocessable_entity
   rescue => e
     render json: { error: e.message }, status: :internal_server_error
   end
@@ -54,9 +54,11 @@ class SleepRecordsController < ApplicationController
   def clock_out
     user = User.find(params[:user_id])
     response = SleepService::ClockOut.execute(user)
-    return render json: response, status: :ok if response[:success]
-
-    return render json: { error: response[:error] }, status: :unprocessable_entity if response[:error]
+    
+    if response[:success]
+      render json: response, status: :ok
+    elsif response[:error]
+      render json: { error: response[:error] }, status: :unprocessable_entity
   rescue => e
     render json: { error: e.message }, status: :internal_server_error
   end
