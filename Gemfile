@@ -37,7 +37,7 @@ gem "thruster", require: false
 
 gem "pg", ">= 1.2" # Use PostgreSQL as the database for Active Record
 
-gem "rspec-rails", group: [:development, :test]
+gem "rspec-rails", group: [ :development, :test ]
 
 gem "faker" # Use the Faker gem to generate fake data for testing and development
 

@@ -6,6 +6,7 @@ class FollowsController < ApplicationController
       render json: response, status: :ok
     elsif response[:error]
       render json: { error: response[:error] }, status: :unprocessable_entity
+    end
   rescue => e
     render json: { error: e.message }, status: :internal_server_error
   end
@@ -17,6 +18,7 @@ class FollowsController < ApplicationController
       render json: response, status: :ok
     elsif response[:error]
       render json: { error: response[:error] }, status: :unprocessable_entity
+    end
   rescue => e
     render json: { error: e.message }, status: :internal_server_error
   end
