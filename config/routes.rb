@@ -9,7 +9,7 @@ Rails.application.routes.draw do
   # root "posts#index"
 
   resources :users, only: [] do
-    resources :sleep_records, only: [:index] do
+    resources :sleep_records, only: [ :index ] do
       post "clock_in", on: :collection
       post "clock_out", on: :collection
     end

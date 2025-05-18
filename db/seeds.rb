@@ -25,7 +25,7 @@ users = User.pluck(:id)
 
 1000.times do
   follower_id = users.sample
-  followed_id = (users - [follower_id]).sample  # Avoid self-follow
+  followed_id = (users - [ follower_id ]).sample  # Avoid self-follow
 
   # Ensure unique follows
   next if Follow.exists?(follower_id: follower_id, followed_id: followed_id)
