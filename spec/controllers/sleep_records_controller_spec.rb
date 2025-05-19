@@ -7,13 +7,13 @@ RSpec.describe SleepRecordsController, type: :controller do
 
   before do
     # Mock the Follow relation
-    allow(Follow).to receive_message_chain(:where, :pluck).and_return([followed_user.id])
+    allow(Follow).to receive_message_chain(:where, :pluck).and_return([ followed_user.id ])
   end
 
   describe "GET #index" do
     context "when user exists and records are present" do
       it "returns the sleep records from cache" do
-        Rails.cache.write("sleep_records/#{user.id}/10/start", { sleep_records: [sleep_record.as_json], next_cursor: sleep_record.id })
+        Rails.cache.write("sleep_records/#{user.id}/10/start", { sleep_records: [ sleep_record.as_json ], next_cursor: sleep_record.id })
 
         get :index, params: { user_id: user.id }
 

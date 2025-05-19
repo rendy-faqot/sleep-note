@@ -49,7 +49,7 @@ RSpec.describe SleepService::ClockOut, type: :service do
         allow(relation).to receive(:order).with(created_at: :desc).and_return(relation)
         allow(relation).to receive(:first).and_return(active_sleep_record)
         allow(active_sleep_record).to receive(:save).and_return(false)
-        allow(active_sleep_record).to receive_message_chain(:errors, :full_messages).and_return(["Failed to update record"])
+        allow(active_sleep_record).to receive_message_chain(:errors, :full_messages).and_return([ "Failed to update record" ])
       end
 
       it "returns an error message with details" do

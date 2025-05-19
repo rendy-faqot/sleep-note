@@ -31,7 +31,7 @@ RSpec.describe SleepService::ClockIn, type: :service do
 
     context "when the new sleep record fails to persist" do
       before do
-        allow(SleepRecord).to receive(:create).and_return(double(persisted?: false, errors: double(full_messages: ["Some error occurred"])))
+        allow(SleepRecord).to receive(:create).and_return(double(persisted?: false, errors: double(full_messages: [ "Some error occurred" ])))
       end
 
       it "returns an error message with details" do
