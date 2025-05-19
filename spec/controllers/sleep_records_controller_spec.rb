@@ -15,7 +15,7 @@ RSpec.describe SleepRecordsController, type: :controller do
       end
 
       it "uses cached data when available" do
-        Rails.cache.write("sleep_records/#{user.id}/10/start", { sleep_records: [sleep_record], next_cursor: nil })
+        Rails.cache.write("sleep_records/#{user.id}/10/start", { sleep_records: [ sleep_record ], next_cursor: nil })
         get :index, params: { user_id: user.id }
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)["sleep_records"].first["duration"]).to eq(21600)
