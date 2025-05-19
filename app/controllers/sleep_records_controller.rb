@@ -3,36 +3,43 @@ class SleepRecordsController < ApplicationController
   def index
     user = User.find(params[:user_id])
 
-    # Calculate the start date (T-7)
-    start_date = 7.days.ago.beginning_of_day
+    # Generate a unique cache key using user ID and the current time window
+    # Cache key including user ID, limit, and cursor
+    cache_key = "sleep_records/#{user.id}/#{params[:limit] || 10}/#{params[:after] || 'start'}"
 
-    # Get followed user IDs and include the current user
-    followed_ids = Follow.where(follower_id: user.id).pluck(:followed_id)
+    # Fetch data from cache or execute the block if cache is missing
+    records = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
+      # Calculate the start date (T-7)
+      start_date = 7.days.ago.beginning_of_day
 
-    # Set pagination parameters
-    limit = (params[:limit] || 10).to_i
-    after = params[:after]
+      # Get followed user IDs and include the current user
+      followed_ids = Follow.where(follower_id: user.id).pluck(:followed_id)
 
-    # Base query: sleep records from the last 7 days, sorted by duration
-    query = SleepRecord.where(user_id: followed_ids, created_at: start_date..Time.current)
-                      .where.not(duration: nil)
-                      .order(duration: :desc)
+      # Set pagination parameters
+      limit = (params[:limit] || 10).to_i
+      after = params[:after]
 
-    # Apply the cursor for pagination (using ID as the cursor)
-    if after.present?
-      query = query.where("id > ?", after)
+      # Base query: sleep records from the last 7 days, sorted by duration
+      query = SleepRecord.where(user_id: followed_ids, created_at: start_date..Time.current)
+                        .where.not(duration: nil)
+                        .order(duration: :desc)
+
+      # Apply the cursor for pagination (using ID as the cursor)
+      if after.present?
+        query = query.where("id > ?", after)
+      end
+
+      # Limit the number of records fetched
+      records = query.limit(limit)
+
+      # Prepare the next cursor (last record ID from the current set)
+      next_cursor = records.last&.id
+
+      # Return structured data to be cached
+      { sleep_records: records.as_json, next_cursor: next_cursor }
     end
 
-    # Limit the number of records fetched
-    records = query.limit(limit)
-
-    # Prepare the next cursor (last record ID from the current set)
-    next_cursor = records.last&.id
-
-    render json: {
-      sleep_records: records,
-      next_cursor: next_cursor
-    }
+    render json: records
   rescue ActiveRecord::RecordNotFound
     render json: { error: "User not found" }, status: :not_found
   end

@@ -1,8 +1,8 @@
 module FollowService
   class Following
     def self.execute(follower_id, followed_id)
-      follower = User.find(follower_id)
-      followed = User.find(followed_id)
+      follower = User.find_by(id: follower_id)
+      followed = User.find_by(id: followed_id)
       # Return an error if the followed user does not exist
       unless followed
         return { error: "Followed user not found" }
